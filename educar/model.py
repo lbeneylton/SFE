@@ -159,16 +159,16 @@ def turma_existe(id_curso, turno, dia_semana):
     conn.close()
     return existe
         
-def aula_existe(data, turma, assunto=None):
+def aula_existe(data, id_turma, assunto):
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute(
-        '''SELECT 1 FROM Aulas WHERE data = ?  AND turma = ? AND assunto = ?''', (data, turma, assunto))
+        '''SELECT 1 FROM Aulas WHERE data = ?  AND id_turma = ? AND assunto = ?''', (data, id_turma, assunto))
     existe = cursor.fetchone() is not None
     conn.close()
     return existe
 
-def registro_existe(id_aluno, id_aula):
+def presenca_existe(id_aluno, id_aula):
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute(
@@ -216,11 +216,11 @@ def inserir_turma_no_db(id_curso, nome, turno, dia_semana):
     conn.commit()
     conn.close()
 
-def inserir_aula_no_db(assunto, data, id_turma, professor):
+def inserir_aula_no_db(assunto, data, id_professor, id_turma):
     conn = conectar_db()
     cursor = conn.cursor()
-    cursor.execute('''INSERT INTO Aulas (assunto, data, professor, id_turma) VALUES (?, ?, ?, ?)''',
-                   (assunto, data, professor, id_turma,))
+    cursor.execute('''INSERT INTO Aulas (assunto, data, id_professor, id_turma) VALUES (?, ?, ?, ?)''',
+                   (assunto, data, id_professor, id_turma,))
     conn.commit()
     conn.close()
 
@@ -259,7 +259,7 @@ def buscar_id_curso(nome_curso):
 
     return resultado[0] if resultado else None
 
-def buscar_id_turma(id_curso, turno):
+def buscar_id_turmaa(id_curso, turno):
     conn = conectar_db()
     cursor = conn.cursor()
 
@@ -279,6 +279,16 @@ def buscar_id_turma_pelo_nome(nome):
 
     return resultado[0] if resultado else None
 
+def buscar_id_professor(nome_professor):
+    nome_professor = nome_professor.upper()
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    cursor.execute('''SELECT id FROM Professores WHERE nome = ?''', (nome_professor,))
+    resultado = cursor.fetchone()
+    conn.close()
+    
+    return resultado[0] if resultado else None
 
 def buscar_id_aula(turno, data):
     conn = conectar_db()
@@ -364,9 +374,6 @@ def buscar_grade_db(data, id_curso, turno):
 
 
 
-
-def buscar_nome_turma():
-    pass
 
 
 

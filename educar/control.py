@@ -72,8 +72,6 @@ def cadastrar_professor(campos):
     except Exception as e:
         return {"Sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o professor {str(e)}"}
 
-
-
 # ------------------- Operação de cadastro de Turma -------------------
 def cadastrar_turma(campos):
     try:
@@ -128,37 +126,32 @@ def cadastrar_aluno(campos):
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o aluno: {str(e)}"}
 
 
-
 # ------------------- Operações de Aula -------------------   ajeitar
 def cadastrar_aula(campos):
     print("\nCadastrando Aula")
     try:
         # Extração dos dados
+        assunto = campos["assunto"].get().upper()
         data = campos["data"].get()
-        assunto = campos["assunto"].get()
-        curso = campos["curso"].get()
-        turno = campos["turno"].get()
-        professor = campos["professor"].get()
+        data = br_to_iso(data)
+
+        turma = campos["turma"].get().upper()
+        professor = campos["professor"].get().upper()
+        
+        id_turma = buscar_id_turma_pelo_nome(turma)
+        id_professor = buscar_id_professor(professor)
 
         # Verifica se os campos obrigatórios estão preenchidos
-        if not data or not turno or not curso:
-            return {"sucesso": False, "mensagem": "Data, turno e curso são obrigatórios."}
-
-        # Normaliza os dados
-        curso = curso.upper()
-        data = br_to_iso(data)
-        turno = turno.upper()
-        professor = professor.upper() if professor else None
-        assunto = assunto.upper() if assunto else None
+        if not assunto:
+            return {"sucesso": False, "mensagem": "Assunto é obrigatório."}
 
         # Verifica se a aula já foi cadastrada
-        if aula_existe(data, turno, assunto):
+        if aula_existe(data, id_turma, assunto):
             return {"sucesso": False, "mensagem": "Aula já cadastrada."}
 
-        # Retorna o id do curso
-        curso_id = buscar_id_curso(curso)
-        inserir_aula_no_db(curso_id, data, assunto, turno, professor)
-        return {"sucesso": True, "mensagem": f"Aula {assunto} cadastrada para o curso {curso}."}
+ 
+        inserir_aula_no_db(assunto, data, id_professor, id_turma)
+        return {"sucesso": True, "mensagem": f"Aula {assunto} cadastrada para a turma {turma} de Curso."}
 
     except Exception as e:
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar a aula {str(e)}"}
