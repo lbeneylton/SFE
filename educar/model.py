@@ -7,8 +7,7 @@ def conectar_db():
     # return sqlite3.connect(r'C:\EDUCAR\FREQUENCIAS\frequencia.db')
 
 
-# Cria as tabelas no banco de dados
-
+# CRIA TABELAS DO BANCO DE DADOS
 def criar_tabela_alunos():
     conn = conectar_db()
     cursor = conn.cursor()
@@ -118,7 +117,6 @@ def criar_tabela_presencas():
     conn.close()
 
 # Função para criar todas as tabelas
-
 def criar_tabelas():
 
     print('\nCRIANDO TABELAS...\n')
@@ -132,7 +130,7 @@ def criar_tabelas():
     print('\nTABELAS CRIADAS COM SUCESSO!\n')
 
 
-# Funções para verificar se valores existem no banco de dados
+# FUNÇÕES PARA VERIFICAR A EXISTENCIA DE VALORES NAS TABELAS
 def aluno_existe(nome):
     conn = conectar_db()
     cursor = conn.cursor()
@@ -149,7 +147,7 @@ def curso_existe(nome):
     conn.close()
     return existe
 
-#-->Verificar se da pra torcar todos argumento só pelo nome da turma
+#-->Verificar se da pra trocar todos argumentos só pelo nome da turma
 def turma_existe(id_curso, turno, dia_semana):
     conn = conectar_db()
     cursor =conn.cursor()
@@ -186,7 +184,7 @@ def professor_existe(nome):
     return existe    
 
 
-# Funções de inserção no banco de dados
+# FUNÇÕES DE INSERÇÃO DE VALORES NAS TABELAS
 def inserir_aluno_no_db(nome, telefone, data_cadastro, id_turma):
     conn = conectar_db()
     cursor = conn.cursor()
@@ -236,7 +234,7 @@ def inserir_presenca_no_db(id_aluno, id_aula, presente):
     conn.close()
 
 
-# Funções de busca de id no banco de dados
+# FUNÇÕES DE BUSCA DE ID NAS TABELAS
 def buscar_id_aluno(nome_aluno):
     nome_aluno = nome_aluno.upper()
     conn = conectar_db()
@@ -259,17 +257,7 @@ def buscar_id_curso(nome_curso):
 
     return resultado[0] if resultado else None
 
-def buscar_id_turmaa(id_curso, turno):
-    conn = conectar_db()
-    cursor = conn.cursor()
-
-    cursor.execute('''SELECT id FROM Turmas WHERE id_curso = ? AND turno = ?''', (id_curso, turno,))
-    resultado = cursor.fetchone()
-    conn.close()
-
-    return resultado[0] if resultado else None
-
-def buscar_id_turma_pelo_nome(nome):
+def buscar_id_turma(nome):
     conn = conectar_db()
     cursor = conn.cursor()
 
@@ -290,16 +278,27 @@ def buscar_id_professor(nome_professor):
     
     return resultado[0] if resultado else None
 
-def buscar_id_aula(turno, data):
+# buscar id pelo assunto pode ser mais interessante? pode acabar achando id de outra aula no mesmo dia e no mesmo turno
+def buscar_id_aulaaa(turno, data):
     conn = conectar_db()
     cursor = conn.cursor()
-
     cursor.execute(
         '''SELECT id FROM Aulas WHERE turno = ? AND data = ?''', (turno, data,))
     resultado = cursor.fetchone()
     conn.close()
 
     return resultado[0] if resultado else None
+
+
+def buscar_id_aula(assunto):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        '''SELECT id FROM Aulas WHERE assunto = ? AND data = ?''', (assunto,))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    return resultado[0] if resultado else None    
 
 
 # Funções de busca de nome no banco de dados
@@ -324,6 +323,8 @@ def buscar_assunto_aula(id_aula):
 
     return resultado[0] if resultado else None
 
+
+# FUNÇÕES PARA BUSCAR TODOS OS VALORES DIFERENTES ENTRE SI
 def buscar_cursos_db():
     conn = conectar_db()
     cursor = conn.cursor()
@@ -347,6 +348,15 @@ def buscar_professores_db():
     professores = cursor.fetchall()
     conn.close()
     return [professor[0] for professor in professores]
+
+def buscar_alunos_db():
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT nome FROM Alunos''')
+    alunos = cursor.fetchall()
+    conn.close()
+    return [aluno[0] for aluno in alunos]
+
 
 
 def buscar_grade_db(data, id_curso, turno):

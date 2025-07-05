@@ -92,7 +92,7 @@ def cadastrar_turma(campos):
     except Exception as e:
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar a turma: {str(e)}"}
 
-# ------------------- Operações de Aluno -------------------
+# ------------------- Operações de cadastro de Aluno -------------------
 def cadastrar_aluno(campos):
     print("Cadastrando aluno")
     try:
@@ -105,7 +105,7 @@ def cadastrar_aluno(campos):
         
         #Buscar id da turma
         turma = campos["turma"].get().upper()
-        id_turma = buscar_id_turma_pelo_nome(turma)
+        id_turma = buscar_id_turma(turma)
         
         # Verifica se o nome do aluno, o telefone são válidos (Diferente de vazio)
         if not nome or not telefone:
@@ -124,7 +124,7 @@ def cadastrar_aluno(campos):
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o aluno: {str(e)}"}
 
 
-# ------------------- Operações de Aula -------------------   ajeitar
+# ------------------- Operações de cadastro de Aula ------------------- 
 def cadastrar_aula(campos):
     print("\nCadastrando Aula")
     try:
@@ -136,7 +136,7 @@ def cadastrar_aula(campos):
         turma = campos["turma"].get().upper()
         professor = campos["professor"].get().upper()
         
-        id_turma = buscar_id_turma_pelo_nome(turma)
+        id_turma = buscar_id_turma(turma)
         id_professor = buscar_id_professor(professor)
 
         # Verifica se os campos obrigatórios estão preenchidos
@@ -153,9 +153,6 @@ def cadastrar_aula(campos):
 
     except Exception as e:
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar a aula {str(e)}"}
-
-
-
 
 
 # ------------------- Operações de Presença -------------------
@@ -177,7 +174,7 @@ def gerar_grade(campos):
     id_curso = buscar_id_curso(curso)
 
     # Recupera o assunto da aula
-    assunto = buscar_assunto_aula(buscar_id_aula(turno, data))
+    #assunto = buscar_assunto_aula(buscar_id_aula(turno, data))
  
  
  
@@ -185,7 +182,7 @@ def gerar_grade(campos):
 
 
 
-    dados_aula = [data, curso, assunto, turno]  # Recupera os dados da aula
+    #dados_aula = [data, curso, assunto, turno]  # Recupera os dados da aula
 
     print(alunos_da_grade)
 
@@ -193,7 +190,7 @@ def gerar_grade(campos):
     if not alunos_da_grade:
         return {"sucesso": False, "mensagem": "Nenhum aluno encontrado para a grade."}
 
-    return dados_aula, alunos_da_grade
+    #return dados_aula, alunos_da_grade
 
 
 # Função para registrar presença de aluno em uma aula
@@ -260,18 +257,4 @@ alunos_dict = {
 }
 
 
-# criar_tabelas()
-# cadastrar_curso("Curso de Matemática")
 
-# cadastrar_aluno(alunos_dict[1])
-
-# # cadastrar_aula("Curso de Matemática", '25-05-2025', 'MANHÃ', 'Revisão de conteúdos','Prof. João')
-# # cadastrar_aula("Curso de Matemática", '25-05-2025', 'TARDE', 'Introdução à Álgebra','Prof. Maria')
-
-# print( gerar_grade('25-05-2025', "curso de matemática", 'MANHÃ'))
-
-# cadastrar_aula("Curso de Matemática", '2023-10-01', 'MANHÃ','Prof. João', 'Revisão de conteúdos')
-# gerar_grade("Curso de Matemática", '2023-10-01', 'MANHÃ')
-
-
-# ajeitar a função buscar grade db
