@@ -356,24 +356,20 @@ try:
                 criar_label(frame, "Data:", 1, 0)
                 data_aula_entry = criar_date_entry(frame, 1, 1)
                            
-                criar_label(frame, "Curso:", 2, 0)
-                curso_entry = criar_combobox(frame, buscar_cursos_db(), 2, 1)
-
-                criar_label(frame, "Turno:", 3, 0)
-                turno_entry = criar_combobox(frame, turnos(), 3, 1, largura=10)
+                criar_label(frame, "Turma:", 2, 0)
+                turma_entry = criar_combobox(frame, buscar_turmas_db(), 2, 1)
                 
-                criar_label(frame, "Professor", 4, 0)
-                professor_entry = criar_combobox(frame, buscar_professores_db(), 4, 1)
+                criar_label(frame, "Professor", 3, 0)
+                professor_entry = criar_combobox(frame, buscar_professores_db(), 3, 1)
                 
                 self.campos_aula = {
                     "data": data_aula_entry,
                     "assunto": assunto_entry,
-                    "curso": curso_entry,
-                    "turno": turno_entry,
+                    "turma": turma_entry,
                     "professor": professor_entry
                 }
 
-                criar_botao_submit(frame, "Cadastrar Aula", 5, 0, lambda: caixa_de_mensagem(cadastrar_aula(self.campos_aula)), largura=20)
+                criar_botao_submit(frame, "Cadastrar Aula", 4, 0, lambda: caixa_de_mensagem(cadastrar_aula(self.campos_aula)), largura=20)
 
         def criar_formulario_professor(self, janela):
             frame = criar_frame(janela, "Dados do Curso")
