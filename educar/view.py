@@ -9,20 +9,14 @@ from control import*
 try:
     # Funções de cadastro e busca para interface
     def caixa_de_mensagem(mensagem):
-        if mensagem["sucesso"]:
-            messagebox.showinfo("Sucesso", mensagem["mensagem"])
+        if (type(mensagem)==dict):
+            if mensagem["sucesso"]:
+                messagebox.showinfo("Sucesso", mensagem["mensagem"])
+            else:
+                messagebox.showerror("Erro", mensagem["mensagem"])
         else:
-            messagebox.showerror("Erro", mensagem["mensagem"])
-           
-           
-           
-    
-
-
-    def grade():
-        print("Gerar grade de presença...")
-
-
+            return mensagem
+        
 
     #mascaras
     def mascarar_telefone(event):
@@ -406,8 +400,7 @@ try:
                 self.janela_grade.protocol("WM_DELETE_WINDOW", self.fechar_janela_grade)
                 self.criar_formulario_grade(self.janela_grade, "Gerar Grade de Presença")
             else:
-                self.janela_grade.lift()
-                
+                self.janela_grade.lift()       
 
         def abrir_janela_consulta(self):
             self.fechar_janela_grade()
@@ -475,14 +468,14 @@ try:
                 "turma": turma_entry
             }
 
+            # Função para atribuir o resultado a uma variável
+            def gerar_grade_e_salvar():
+                self.dados = caixa_de_mensagem(retornar_dados_grade(self.campos_formulario_grade))
+                print(self.dados)  
+                return self.dados
+
             # Botão para gerar a grade da turma
-            criar_botao_submit(
-                frame, 
-                "Gerar grade da Turma", 
-                3, 0, 
-                lambda: retornar_dados_grade(self.campos_formulario_grade)
-            )
-          
+            criar_botao_submit(frame, "Gerar grade da Turma", 3, 0, gerar_grade_e_salvar)         
           
         def gerar_grade_interface(self, dados, alunos):
             # Ajusta o tamanho da janela

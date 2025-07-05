@@ -304,16 +304,6 @@ def buscar_id_aula(assunto):
     conn.close()
 
     return resultado[0] if resultado else None    
-
-def buscar_turno_aula(id_aula):
-    conn = conectar_db()
-    cursor = conn.cursor()
-    cursor.execute(
-        '''SELECT turno FROM Aulas WHERE id_aula = ?''', (id_aula,))
-    resultado = cursor.fetchone()
-    conn.close()
-
-    return resultado[0] if resultado else None 
     
 # Funções de busca de nome no banco de dados
 def buscar_nome_curso(id_curso):

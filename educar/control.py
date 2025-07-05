@@ -152,6 +152,7 @@ def retornar_dados_grade(campos):
 
     data = campos["data"].get()
     turma = campos["turma"].get().upper()
+    turno = campos["turno"].get().upper()
     
     # Normaliza os dados
     # Converter data para o formato ISO 
@@ -162,7 +163,6 @@ def retornar_dados_grade(campos):
     # Recupera o assunto da aula
     assunto = buscar_assunto_aula_por_data_e_turma(data_iso, id_turma)
     id_aula = buscar_id_aula(assunto)
-    turno = buscar_turno_aula(id_aula)
  
  
     alunos_da_grade = retornar_dados_grade_db(id_aula)
