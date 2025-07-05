@@ -80,23 +80,10 @@ def cadastrar_aluno(campos):
         data_cadastro = campos["data_cadastro"].get()
         data_cadastro = br_to_iso(data_cadastro)
         
-        #Apagar
-        curso = campos["curso"].get().upper()
-        turno = campos["turno"].get().upper()
-        
-        """
+        #Buscar id da turma
         turma = campos["turma"].get().upper()
         id_turma = buscar_id_turma_pelo_nome(turma)
-        """
         
-        #Busca id da turma
-        id_curso = buscar_id_curso(curso)
-        id_turma = buscar_id_turma(id_curso, turno)
-        
-        if not id_turma:
-            return {"sucesso": False, "mensagem": "Turma inválida."}
-
-
         # Verifica se o nome do aluno, o telefone são válidos (Diferente de vazio)
         if not nome or not telefone:
             return {"sucesso": False, "mensagem": "Nome e telefone são obrigatórios."}

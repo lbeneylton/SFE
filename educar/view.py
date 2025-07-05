@@ -278,21 +278,17 @@ try:
             criar_label(frame, "Data de Cadastro:", 2, 0)
             data_cadastro_entry = criar_date_entry(frame, 2, 1)
             
-            criar_label(frame, "Curso:", 3, 0)
-            curso_entry = criar_combobox(frame, buscar_cursos_db(), 3, 1)
-                    
-            criar_label(frame, "Turno:", 4, 0)
-            turno_entry = criar_combobox(frame, turnos(), 4, 1)
+            criar_label(frame, "Turma:", 3, 0)
+            turma_entry = criar_combobox(frame, buscar_turmas_db(), 3, 1)
 
             self.campos_aluno = {
                 "nome": nome_entry,
                 "telefone": telefone_entry,
                 "data_cadastro": data_cadastro_entry,
-                "curso": curso_entry,
-                "turno": turno_entry
+                "turma": turma_entry
             }
                 
-            criar_botao_submit(frame, "Cadastrar Aluno", 5, 0, lambda: caixa_de_mensagem(cadastrar_aluno(self.campos_aluno)))     
+            criar_botao_submit(frame, "Cadastrar Aluno", 4, 0, lambda: caixa_de_mensagem(cadastrar_aluno(self.campos_aluno)))     
 
         def criar_formulario_curso(self, janela):
             frame = criar_frame(janela, "Dados do Curso")
