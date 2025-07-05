@@ -358,9 +358,27 @@ def buscar_alunos_db():
     return [aluno[0] for aluno in alunos]
 
 
+def buscar_turmas_na_data(data):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT DISTINCT t.nome
+        FROM Aulas a
+        JOIN Turmas t ON a.id_turma = t.id
+        WHERE a.data = ?
+    ''', (data,))
+    
+    resultado = cursor.fetchall()
+    conn.close()
 
-def buscar_grade_db(data, id_curso, turno):
+    return [linha[0] for linha in resultado] if resultado else []
+
+
+
+
+def buscar_grade_db(id_aula):
     id_turma = buscar_id_turma(id_curso,turno)
+    
     
     with conectar_db() as conn:
         cursor = conn.cursor()

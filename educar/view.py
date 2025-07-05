@@ -88,7 +88,7 @@ try:
         date_entry.set_date(date.today())  # Define a data atual como padrão
         return date_entry
 
-    def criar_botao_submit(frame, texto, linha, coluna, comando, largura=20):
+    def criar_botao_submit(frame, texto, linha, coluna, comando=None, largura=20):
         botao = ttk.Button(frame, text=texto, command=comando, width=largura)
         botao.grid(row=linha, column=coluna, pady=10)
         return botao
@@ -407,10 +407,7 @@ try:
                 self.criar_formulario_grade(self.janela_grade, "Gerar Grade de Presença", "Gerar Grade")
             else:
                 self.janela_grade.lift()
-
-
-
-
+                
 
         def abrir_janela_consulta(self):
             self.fechar_janela_grade()
@@ -439,22 +436,36 @@ try:
         # Função para criar o formulário de presença
         def criar_formulario_grade(self, janela, titulo, texto_botao):
             frame = criar_frame(janela, titulo)
-            self.frame_grade = criar_frame(janela,"")
+            self.frame_grade = criar_frame(janela, "")
 
             criar_label(frame, "Data:", 0, 0)
             data_entry = criar_date_entry(frame, 0, 1)
 
-            criar_label(frame, "Curso:", 1, 0)
-            curso_entry = criar_combobox(frame, buscar_cursos_db(), 1, 1, largura=30)
+            criar_label(frame, "Turma:", 1, 0)
+            curso_entry = criar_combobox(frame, [], 1, 1, largura=30)  # Começa vazio
 
-            criar_label(frame, "Turno:", 2, 0)
-            turno_entry = criar_combobox(frame, turnos(), 2, 1, largura=10)
+            # Função para atualizar as turmas sempre que a data mudar
+            def atualizar_turmas(*args):
+                data = data_entry.get()
+                if data:
+                    turmas = buscar_turmas_na_data(br_to_iso(data))
+                    curso_entry['values'] = turmas  # Atualiza opções
+                    if turmas:
+                        curso_entry.set(turmas[0])  # Seleciona a primeira por padrão
+                    else:
+                        curso_entry.set("")  # Limpa seleção se não houver turmas
+
+            # Vincula o evento de mudança na data
+            data_entry.bind("<<DateEntrySelected>>", atualizar_turmas)
 
             self.campos_formulario = {
                 "data": data_entry,
-                "curso": curso_entry,
-                "turno": turno_entry
+                "curso": curso_entry
             }
+
+            
+            criar_botao_submit(frame, "Gerar grade da Turma", 2, 0)
+            
             
             def grade():
                 resultado = gerar_grade(self.campos_formulario)
