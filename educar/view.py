@@ -16,11 +16,7 @@ try:
            
            
            
-           
-        
-          
-    def buscar_professores_db():
-        return["scsadfassd"]
+    
 
 
     def grade():
@@ -321,7 +317,7 @@ try:
             curso_entry = criar_entry(frame, 0, 1, True)
             
             self.campos_curso ={
-                "curso": curso_entry
+                "nome": curso_entry
             }
             
             criar_botao_submit(frame, "Cadastrar curso", 2, 0, lambda: caixa_de_mensagem(cadastrar_curso(self.campos_curso)))
@@ -380,7 +376,16 @@ try:
                 criar_botao_submit(frame, "Cadastrar Aula", 5, 0, lambda: caixa_de_mensagem(cadastrar_aula(self.campos_aula)), largura=20)
 
         def criar_formulario_professor(self, janela):
-            pass
+            frame = criar_frame(janela, "Dados do Curso")
+            
+            criar_label(frame, "Nome:", 0, 0)
+            professor_entry = criar_entry(frame, 0, 1, True)
+            
+            self.campos_professor ={
+                "nome": professor_entry
+            }
+            
+            criar_botao_submit(frame, "Cadastrar professor", 2, 0, lambda: caixa_de_mensagem(cadastrar_professor(self.campos_professor)))
             
 
     class Telapresencas(tk.Frame):

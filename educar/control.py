@@ -28,7 +28,7 @@ def cadastrar_curso(campos):
     # Verifica se o nome do curso é válido (Diferente de vazio)
     print("\nCadastrando curso")
     try:
-        nome = campos["curso"].get()
+        nome = campos["nome"].get()
 
         if not nome:
             return {"sucesso": False, "mensagem": "Nome do curso é obrigatório."}
@@ -51,7 +51,7 @@ def cadastrar_curso(campos):
 def cadastrar_professor(campos):
     print("Cadastrando Professor")
     try:
-        nome = campos["professor"].get()
+        nome = campos["nome"].get()
 
         if not nome:
             return {"sucesso": False, "mensagem": "Nome do professor é obrigatório."}
@@ -66,8 +66,6 @@ def cadastrar_professor(campos):
         # Adiciona o curso no banco de dados
         inserir_professor_no_db(nome)
         return {"sucesso": True, "mensagem": f"Professor {nome} cadastrado com sucesso."}
-        
-        
         
     except Exception as e:
         return {"Sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o professor {str(e)}"}
