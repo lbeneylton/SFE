@@ -1,0 +1,77 @@
+# Organziar
+
+def buscar_alunos_sem_certificado(curso, turno=None):
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    # Consulta SQL para buscar alunos sem certificado
+    if turno:
+        cursor.execute('''SELECT a.nome, a.telefone, a.data_cadastro 
+                          FROM Alunos a 
+                          JOIN Cursos c ON a.id_curso = c.id 
+                          WHERE c.nome = ? AND a.certificado IS NULL AND a.turno = ?''', (curso, turno))
+    else:
+        cursor.execute('''SELECT a.nome, a.telefone, a.data_cadastro 
+                          FROM Alunos a 
+                          JOIN Cursos c ON a.id_curso = c.id 
+                          WHERE c.nome = ? AND a.certificado IS NULL''', (curso,))
+
+    alunos = cursor.fetchall()
+    conn.close()
+
+    return [{"nome": aluno[0], "telefone": aluno[1], "data_cadastro": iso_to_br(aluno[2])} for aluno in alunos]
+
+
+def alunos_sem_certificado(curso, turno):
+    # Verifica se o curso existe
+    if not curso_existe(curso):
+        return {"sucesso": False, "mensagem": "Curso não encontrado."}
+
+    # Normaliza o nome do curso
+    curso = curso.upper()
+    turno = turno.upper()
+
+    # Busca os alunos sem certificado
+    alunos = buscar_alunos_sem_certificado(curso, turno)
+
+    if not alunos:
+        return {"sucesso": False, "mensagem": "Nenhum aluno encontrado sem certificado."}
+
+    return {"sucesso": True, "alunos": alunos}
+
+
+# Exemplo de dicionário com dados de alunos
+alunos_dict = {
+    1: {"nome": "MARCIA", "telefone": "456754549123", "data_cadastro": "24-05-2025", "curso": "CURSO DE MATEMÁTICA", "turno": "MANHÃ"},
+    2: {"nome": "JOÃO", "telefone": "987654321", "data_cadastro": "25-05-2025", "curso": "CURSO DE MATEMÁTICA", "turno": "TARDE"},
+    3: {"nome": "ANA", "telefone": "123456789", "data_cadastro": "26-05-2025", "curso": "CURSO DE MATEMÁTICA", "turno": "MANHÃ"}
+}
+
+
+
+
+            self.config(bg="#f0f0f0")  # Cor de fundo suave
+            self.criar_layout_inicial()
+
+        def criar_layout_inicial(self):
+            titulo = tk.Label(self, text="Cadastro de Itens", font=("Helvetica", 18, "bold"), bg="#f0f0f0")
+            titulo.pack(pady=(20, 10))
+
+            frame_botoes = tk.Frame(self, bg="#f0f0f0")
+            frame_botoes.pack(pady=10)
+
+            botoes_info = [
+                ("Cadastrar Aluno", self.abrir_janela_aluno),
+                ("Cadastrar Curso", self.abrir_janela_curso),
+                ("Cadastrar Turma", self.abrir_janela_turma),
+                ("Cadastrar Aula", self.abrir_janela_aula),
+                ("Cadastrar Professor", self.abrir_janela_professor),
+            ]
+
+            for i, (texto, comando) in enumerate(botoes_info):
+                botao = tk.Button(frame_botoes, text=texto, width=25, height=2, command=comando,
+                                bg="#4CAF50", fg="white", font=("Helvetica", 10, "bold"), bd=0, relief="ridge")
+                botao.grid(row=i // 2, column=i % 2, padx=10, pady=10)
+
+            self.pack(expand=True, fill="both")
+

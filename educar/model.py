@@ -389,7 +389,6 @@ def retornar_turmas_na_data_e_turno(data, turno):
     return [linha[0] for linha in resultado] if resultado else []
 
 
-
 def retornar_dados_grade_db(id_aula):
     with conectar_db() as conn:
         cursor = conn.cursor()
