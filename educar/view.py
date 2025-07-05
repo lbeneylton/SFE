@@ -176,12 +176,14 @@ try:
             self.janela_aula = None
             self.janela_curso = None
             self.janela_turma = None
+            self.janela_professor = None
 
 #BOTOES QUE INICIAM AS JANELAS TOPLEVEL
             criar_botao_tela(self, "Cadastrar Aluno", self.abrir_janela_aluno)
             criar_botao_tela(self, "Cadastrar Curso", self.abrir_janela_curso)
             criar_botao_tela(self, "Cadastrar Turma", self.abrir_janela_turma)
             criar_botao_tela(self, "Cadastrar Aula", self.abrir_janela_aula)
+            criar_botao_tela(self, "Cadastrar Professor", self.abrir_janela_professor)
 
 
 #FUNÇÕES APORA ABRIR JANELAS
@@ -189,6 +191,7 @@ try:
             self.fechar_janela_aula()
             self.fechar_janela_curso()
             self.fechar_janela_turma()
+            self.fechar_janela_professor()
             if self.janela_aluno is None or not self.janela_aluno.winfo_exists():
                 self.janela_aluno = tk.Toplevel(self)
                 self.janela_aluno.title("Cadastro de Aluno")
@@ -203,6 +206,7 @@ try:
             self.fechar_janela_aluno()
             self.fechar_janela_aula()
             self.fechar_janela_turma()
+            self.fechar_janela_professor()
             if self.janela_curso is None or not self.janela_curso.winfo_exists():
                 self.janela_curso = tk.Toplevel(self)
                 self.janela_curso.title("Cadastro de Curso")
@@ -217,6 +221,7 @@ try:
             self.fechar_janela_aula()
             self.fechar_janela_curso()
             self.fechar_janela_aluno()
+            self.fechar_janela_professor()
             if self.janela_turma is None or not self.janela_turma.winfo_exists():
                 self.janela_turma = tk.Toplevel(self)
                 self.janela_turma.title("Cadastro de Turma")
@@ -231,6 +236,7 @@ try:
             self.fechar_janela_aluno()
             self.fechar_janela_curso()
             self.fechar_janela_turma()
+            self.fechar_janela_professor()
             if self.janela_aula is None or not self.janela_aula.winfo_exists():
                 self.janela_aula = tk.Toplevel(self)
                 self.janela_aula.title("Cadastro de Aula")
@@ -241,6 +247,20 @@ try:
             else:
                 self.janela_aula.lift()
 
+        def abrir_janela_professor(self):
+            self.fechar_janela_aluno()
+            self.fechar_janela_curso()
+            self.fechar_janela_turma()
+            self.fechar_janela_aula()
+            if self.janela_professor is None or not self.janela_professor.winfo_exists():
+                self.janela_professor = tk.Toplevel(self)
+                self.janela_professor.title("Cadastro de Professor")
+                self.janela_professor.geometry("700x400")
+                self.janela_professor.resizable(False, False)
+                self.janela_professor.protocol("WM_DELETE_WINDOW", self.fechar_janela_professor)
+                self.criar_formulario_professor(self.janela_professor)
+            else:
+                self.janela_professor.lift()
 
 #FUNÇÕES PARA FECHAR JANELAS
         def fechar_janela_aluno(self):
@@ -263,6 +283,10 @@ try:
                 self.janela_aula.destroy()
                 self.janela_aula = None
 
+        def fechar_janela_professor(self):
+            if self.janela_professor:
+                self.janela_professor.destroy()
+                self.janela_professor = None
 
 #FORMULARIOS DAS JANELAS (Fazem a conexão com control.py)
         def criar_formulario_aluno(self, janela):
@@ -355,7 +379,8 @@ try:
 
                 criar_botao_submit(frame, "Cadastrar Aula", 5, 0, lambda: caixa_de_mensagem(cadastrar_aula(self.campos_aula)), largura=20)
 
-                
+        def criar_formulario_professor(self, janela):
+            pass
             
 
     class Telapresencas(tk.Frame):
