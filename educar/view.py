@@ -299,7 +299,7 @@ try:
             data_cadastro_entry = criar_date_entry(frame, 2, 1)
             
             criar_label(frame, "Turma:", 3, 0)
-            turma_entry = criar_combobox(frame, buscar_turmas_db(), 3, 1)
+            turma_entry = criar_combobox(frame, retornar_turmas_db(), 3, 1)
 
             self.campos_aluno = {
                 "nome": nome_entry,
@@ -329,13 +329,13 @@ try:
             nome_entry = criar_entry(frame, 0, 1, True)
             
             criar_label(frame, "Curso", 1, 0)
-            curso_entry = criar_combobox(frame, buscar_cursos_db(), 1, 1)
+            curso_entry = criar_combobox(frame, retornar_cursos_db(), 1, 1)
             
             criar_label(frame, "Turno", 2, 0)
-            turno_entry = criar_combobox(frame, turnos(), 2, 1)
+            turno_entry = criar_combobox(frame, retornar_turnos_db(), 2, 1)
             
             criar_label(frame, "Dia da Semana", 3, 0)
-            dia_semana_entry = criar_combobox(frame, dias_semana(), 3, 1)
+            dia_semana_entry = criar_combobox(frame, retornar_dias_semana_db(), 3, 1)
             
             self.campos_turma ={
                 "nome":nome_entry,
@@ -357,10 +357,10 @@ try:
                 data_aula_entry = criar_date_entry(frame, 1, 1)
                            
                 criar_label(frame, "Turma:", 2, 0)
-                turma_entry = criar_combobox(frame, buscar_turmas_db(), 2, 1)
+                turma_entry = criar_combobox(frame, retornar_turmas_db(), 2, 1)
                 
                 criar_label(frame, "Professor", 3, 0)
-                professor_entry = criar_combobox(frame, buscar_professores_db(), 3, 1)
+                professor_entry = criar_combobox(frame, retornar_professores_db(), 3, 1)
                 
                 self.campos_aula = {
                     "data": data_aula_entry,
@@ -404,7 +404,7 @@ try:
                 self.janela_grade.geometry("700x200")
                 #self.janela_grade.resizable(False, False)
                 self.janela_grade.protocol("WM_DELETE_WINDOW", self.fechar_janela_grade)
-                self.criar_formulario_grade(self.janela_grade, "Gerar Grade de Presença", "Gerar Grade")
+                self.criar_formulario_grade(self.janela_grade, "Gerar Grade de Presença")
             else:
                 self.janela_grade.lift()
                 
@@ -434,54 +434,54 @@ try:
                 
                 
         # Função para criar o formulário de presença
-        def criar_formulario_grade(self, janela, titulo, texto_botao):
+        def criar_formulario_grade(self, janela, titulo):
             frame = criar_frame(janela, titulo)
             self.frame_grade = criar_frame(janela, "")
 
+            # Campo de Data
             criar_label(frame, "Data:", 0, 0)
             data_entry = criar_date_entry(frame, 0, 1)
 
-            criar_label(frame, "Turma:", 1, 0)
-            curso_entry = criar_combobox(frame, [], 1, 1, largura=30)  # Começa vazio
+            # Campo de Turno
+            criar_label(frame, "Turno:", 1, 0)
+            turno_entry = criar_combobox(frame, retornar_turnos_db(), 1, 1)
 
-            # Função para atualizar as turmas sempre que a data mudar
+            # Campo de Turma (começa vazio)
+            criar_label(frame, "Turma:", 2, 0)
+            turma_entry = criar_combobox(frame, [], 2, 1, largura=30)
+
+            # Função para atualizar as turmas quando data ou turno mudarem
             def atualizar_turmas(*args):
                 data = data_entry.get()
-                if data:
-                    turmas = buscar_turmas_na_data(br_to_iso(data))
-                    curso_entry['values'] = turmas  # Atualiza opções
+                turno = turno_entry.get()
+                if data and turno:
+                    turmas = retornar_turmas_na_data_e_turno(br_to_iso(data), turno)
+                    turma_entry['values'] = turmas
                     if turmas:
-                        curso_entry.set(turmas[0])  # Seleciona a primeira por padrão
+                        turma_entry.set(turmas[0])
                     else:
-                        curso_entry.set("")  # Limpa seleção se não houver turmas
+                        turma_entry.set("")
 
-            # Vincula o evento de mudança na data
+            # Vincula atualização quando a data muda (usando `bind` do `DateEntry`)
             data_entry.bind("<<DateEntrySelected>>", atualizar_turmas)
 
-            self.campos_formulario = {
+            # Vincula atualização quando o turno muda
+            turno_entry.bind("<<ComboboxSelected>>", atualizar_turmas)
+
+            # Guarda os campos no dicionário
+            self.campos_formulario_grade = {
                 "data": data_entry,
-                "curso": curso_entry
+                "turno": turno_entry,
+                "turma": turma_entry
             }
 
-            
-            criar_botao_submit(frame, "Gerar grade da Turma", 2, 0)
-            
-            
-            def grade():
-                resultado = gerar_grade(self.campos_formulario)
-                print(resultado)
-                # if isinstance(resultado, list):
-                #     caixa_de_mensagem(resultado)
-                # else:
-                #     dados, alunos = resultado
-                #     print(alunos)
-                #     print(dados)
-                #     self.gerar_grade_interface(dados, alunos)
-
-                
-            criar_botao_submit(frame, texto_botao, 3, 0, grade, largura=20)
-          
-          
+            # Botão para gerar a grade da turma
+            criar_botao_submit(
+                frame, 
+                "Gerar grade da Turma", 
+                3, 0, 
+                lambda: retornar_dados_grade(self.campos_formulario_grade)
+            )
           
           
         def gerar_grade_interface(self, dados, alunos):

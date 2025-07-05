@@ -1,5 +1,11 @@
 import sqlite3
 
+def retornar_dias_semana_db():
+    return "DOMINGO SEGUNDA-FEIRA TERÇA-FEIRA QUARTA-FEIRA QUINTA-FEIRA SEXTA-FEIRA SÁBADO".split()
+
+def retornar_turnos_db():
+    return "MANHÃ TARDE".split()
+
 
 def conectar_db():
     # Conexão com o banco de dados SQLite
@@ -148,7 +154,7 @@ def curso_existe(nome):
     return existe
 
 #-->Verificar se da pra trocar todos argumentos só pelo nome da turma
-def turma_existe(id_curso, turno, dia_semana):
+def turma_existee(id_curso, turno, dia_semana):
     conn = conectar_db()
     cursor =conn.cursor()
     cursor.execute(
@@ -156,6 +162,15 @@ def turma_existe(id_curso, turno, dia_semana):
     existe = cursor.fetchone() is not None
     conn.close()
     return existe
+        
+def turma_existe(nome):
+    conn = conectar_db()
+    cursor =conn.cursor()
+    cursor.execute(
+        '''SELECT 1 FROM Turmas WHERE nome = ?''',(nome,))
+    existe = cursor.fetchone() is not None
+    conn.close()
+    return existe            
         
 def aula_existe(data, id_turma, assunto):
     conn = conectar_db()
@@ -279,28 +294,27 @@ def buscar_id_professor(nome_professor):
     return resultado[0] if resultado else None
 
 # buscar id pelo assunto pode ser mais interessante? pode acabar achando id de outra aula no mesmo dia e no mesmo turno
-def buscar_id_aulaaa(turno, data):
-    conn = conectar_db()
-    cursor = conn.cursor()
-    cursor.execute(
-        '''SELECT id FROM Aulas WHERE turno = ? AND data = ?''', (turno, data,))
-    resultado = cursor.fetchone()
-    conn.close()
-
-    return resultado[0] if resultado else None
-
 
 def buscar_id_aula(assunto):
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute(
-        '''SELECT id FROM Aulas WHERE assunto = ? AND data = ?''', (assunto,))
+        '''SELECT id FROM Aulas WHERE assunto = ?''', (assunto,))
     resultado = cursor.fetchone()
     conn.close()
 
     return resultado[0] if resultado else None    
 
+def buscar_turno_aula(id_aula):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        '''SELECT turno FROM Aulas WHERE id_aula = ?''', (id_aula,))
+    resultado = cursor.fetchone()
+    conn.close()
 
+    return resultado[0] if resultado else None 
+    
 # Funções de busca de nome no banco de dados
 def buscar_nome_curso(id_curso):
     conn = conectar_db()
@@ -323,9 +337,19 @@ def buscar_assunto_aula(id_aula):
 
     return resultado[0] if resultado else None
 
+def buscar_assunto_aula_por_data_e_turma(data, id_turma): #ajeitar pois paree errada
+    conn = conectar_db()
+    cursor = conn.cursor() 
+    cursor.execute(
+        '''SELECT assunto FROM Aulas WHERE data = ? AND id_turma = ?''', (data, id_turma))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    return resultado[0] if resultado else None
+
 
 # FUNÇÕES PARA BUSCAR TODOS OS VALORES DIFERENTES ENTRE SI
-def buscar_cursos_db():
+def retornar_cursos_db():
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute('''SELECT nome FROM Cursos''')
@@ -333,7 +357,7 @@ def buscar_cursos_db():
     conn.close()
     return [curso[0] for curso in cursos]
 
-def buscar_turmas_db():
+def retornar_turmas_db():
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute('''SELECT nome FROM Turmas''')
@@ -341,7 +365,7 @@ def buscar_turmas_db():
     conn.close()
     return [professor[0] for professor in professores]
 
-def buscar_professores_db():
+def retornar_professores_db():
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute('''SELECT nome FROM Professores''')
@@ -349,7 +373,7 @@ def buscar_professores_db():
     conn.close()
     return [professor[0] for professor in professores]
 
-def buscar_alunos_db():
+def retornar_alunos_db():
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute('''SELECT nome FROM Alunos''')
@@ -358,53 +382,44 @@ def buscar_alunos_db():
     return [aluno[0] for aluno in alunos]
 
 
-def buscar_turmas_na_data(data):
+def retornar_turmas_na_data_e_turno(data, turno):
     conn = conectar_db()
     cursor = conn.cursor()
+    
     cursor.execute('''
-        SELECT DISTINCT t.nome
-        FROM Aulas a
-        JOIN Turmas t ON a.id_turma = t.id
-        WHERE a.data = ?
-    ''', (data,))
+        SELECT DISTINCT Turmas.nome
+        FROM Aulas
+        JOIN Turmas ON Aulas.id_turma = Turmas.id
+        WHERE Aulas.data = ? AND Turmas.turno = ?
+    ''', (data, turno,))
     
     resultado = cursor.fetchall()
     conn.close()
-
+    
     return [linha[0] for linha in resultado] if resultado else []
 
 
 
-
-def buscar_grade_db(id_aula):
-    id_turma = buscar_id_turma(id_curso,turno)
-    
-    
+def retornar_dados_grade_db(id_aula):
     with conectar_db() as conn:
         cursor = conn.cursor()
 
         cursor.execute('''
-            SELECT
+            SELECT 
                 Alunos.id,
                 Alunos.nome,
                 Alunos.telefone,
-                Presencas.presente 
-            FROM Turmas
+                COALESCE(Presencas.presente, 0) AS presente
+            FROM Aulas
             JOIN Alunos ON Alunos.id_turma = Aulas.id_turma
-            LEFT JOIN Presencas ON Presencas.id_aula = Aulas.id AND Presencas.id_aluno = Alunos.id 
-            WHERE Aulas.data = ? AND Aulas.id_turma = ?
-            GROUP BY Alunos.id
-                       ''', (data, id_turma))
+            LEFT JOIN Presencas ON Presencas.id_aluno = Alunos.id AND Presencas.id_aula = Aulas.id
+            WHERE Aulas.id = ?
+            ORDER BY Alunos.nome
+        ''', (id_aula,))
 
         alunos_com_presenca = cursor.fetchall()
 
     return alunos_com_presenca
-
-
-
-
-
-
 
 
 

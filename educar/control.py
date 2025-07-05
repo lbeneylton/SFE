@@ -1,12 +1,6 @@
 from datetime import datetime
 from model import *  # Banco de Dados
 
-def dias_semana():
-    return "DOMINGO SEGUNDA-FEIRA TERÇA-FEIRA QUARTA-FEIRA QUINTA-FEIRA SEXTA-FEIRA SÁBADO".split()
-
-def turnos():
-    return "MANHÃ TARDE".split()
-
 # ------------------- Utilitários de Data -------------------
 def br_to_iso(data_str):
     return data_str
@@ -77,10 +71,9 @@ def cadastrar_turma(campos):
         curso = campos["curso"].get()
         id_curso = buscar_id_curso(curso.upper())
         turno = campos["turno"].get().upper()
-        dia_semana =campos["dia_semana"].get().upper()
-        print(nome, curso, id_curso, turno, dia_semana)
+        dia_semana = campos["dia_semana"].get().upper()
         
-        if turma_existe(id_curso, turno, dia_semana):
+        if turma_existee(id_curso, turno, dia_semana) or turma_existe(nome):
             return {"sucesso": False, "mensagem": f"Turma de {curso} no turno {turno} de {dia_semana} já existe."}
         
         
@@ -123,7 +116,6 @@ def cadastrar_aluno(campos):
     except Exception as e:
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o aluno: {str(e)}"}
 
-
 # ------------------- Operações de cadastro de Aula ------------------- 
 def cadastrar_aula(campos):
     print("\nCadastrando Aula")
@@ -156,41 +148,34 @@ def cadastrar_aula(campos):
 
 
 # ------------------- Operações de Presença -------------------
-
-
-def gerar_grade(campos):
+def retornar_dados_grade(campos):
 
     data = campos["data"].get()
-    curso = campos["curso"].get().upper()
-    turno = campos["turno"].get().upper()
-
-    # Validação da inserção dos campos obrigatórios
-    if not curso or not curso or not turno:
-        return {"sucesso": False, "mensagem": "Curso, data e turno são obrigatórios."}
-
+    turma = campos["turma"].get().upper()
+    
     # Normaliza os dados
-    # Converter data para o formato ISO
+    # Converter data para o formato ISO 
     data_iso = br_to_iso(data)
-    id_curso = buscar_id_curso(curso)
+    id_turma = buscar_id_turma(turma)  
+    
 
     # Recupera o assunto da aula
-    #assunto = buscar_assunto_aula(buscar_id_aula(turno, data))
+    assunto = buscar_assunto_aula_por_data_e_turma(data_iso, id_turma)
+    id_aula = buscar_id_aula(assunto)
+    turno = buscar_turno_aula(id_aula)
  
  
- 
-    alunos_da_grade = buscar_grade_db(data_iso, id_curso, turno)
+    alunos_da_grade = retornar_dados_grade_db(id_aula)
+    dados_aula = [data, id_turma, assunto, turno]  # Recupera os dados da aula
 
-
-
-    #dados_aula = [data, curso, assunto, turno]  # Recupera os dados da aula
-
-    print(alunos_da_grade)
 
     # Se a grade estiver vazia, retorna uma mensagem de erro
     if not alunos_da_grade:
-        return {"sucesso": False, "mensagem": "Nenhum aluno encontrado para a grade."}
-
-    #return dados_aula, alunos_da_grade
+         return {"sucesso": False, "mensagem": "Nenhum aluno encontrado para a grade."}
+     
+    print(alunos_da_grade)
+    return dados_aula, alunos_da_grade
+    
 
 
 # Função para registrar presença de aluno em uma aula
