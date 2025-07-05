@@ -47,6 +47,33 @@ def cadastrar_curso(campos):
     except Exception as e:
         return {"sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o curso: {str(e)}"}
 
+# ------------------- Operação de cadastro de Professor -------------------
+def cadastrar_professor(campos):
+    print("Cadastrando Professor")
+    try:
+        nome = campos["professor"].get()
+
+        if not nome:
+            return {"sucesso": False, "mensagem": "Nome do professor é obrigatório."}
+
+        # Normaliza os dados
+        nome = nome.upper()
+
+        # Verifica se o curso já existe
+        if professor_existe(nome):
+            return {"sucesso": False, "mensagem": f"Professor {nome} já cadastrado."}
+
+        # Adiciona o curso no banco de dados
+        inserir_professor_no_db(nome)
+        return {"sucesso": True, "mensagem": f"Professor {nome} cadastrado com sucesso."}
+        
+        
+        
+    except Exception as e:
+        return {"Sucesso": False, "mensagem": f"Ocorreu um erro ao cadastrar o professor {str(e)}"}
+
+
+
 # ------------------- Operação de cadastro de Turma -------------------
 def cadastrar_turma(campos):
     try:

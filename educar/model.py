@@ -177,6 +177,14 @@ def registro_existe(id_aluno, id_aula):
     conn.close()
     return existe
 
+def professor_existe(nome):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT 1 FROM Professores WHERE nome = ?''', (nome,))
+    existe = cursor.fetchone() is not None
+    conn.close()
+    return existe    
+
 
 # Funções de inserção no banco de dados
 def inserir_aluno_no_db(nome, telefone, data_cadastro, id_turma):
@@ -191,6 +199,13 @@ def inserir_curso_no_db(nome_curso):
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO Cursos (nome) VALUES (?)''', (nome_curso,))
+    conn.commit()
+    conn.close()
+    
+def inserir_professor_no_db(nome_professor):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute('''INSERT INTO Professores (nome) VALUES (?)''', (nome_professor,))
     conn.commit()
     conn.close()
 
