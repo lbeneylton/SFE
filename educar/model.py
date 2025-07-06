@@ -372,16 +372,17 @@ def retornar_alunos_db():
     return [aluno[0] for aluno in alunos]
 
 
-def retornar_turmas_na_data_e_turno(data, turno):
+def retornar_cursos_na_data_e_turno(data, turno):
     conn = conectar_db()
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT DISTINCT Turmas.nome
+        SELECT DISTINCT Cursos.nome
         FROM Aulas
         JOIN Turmas ON Aulas.id_turma = Turmas.id
+        JOIN Cursos ON Turmas.id_curso = Cursos.id
         WHERE Aulas.data = ? AND Turmas.turno = ?
-    ''', (data, turno,))
+    ''', (data, turno))
     
     resultado = cursor.fetchall()
     conn.close()
@@ -411,6 +412,16 @@ def retornar_dados_grade_db(id_aula):
     return alunos_com_presenca
 
 
+def buscar_nome_turma(id_curso, turno):
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    cursor.execute('''SELECT nome FROM Turmas WHERE id = ? AND turno = ?''', (id_curso, turno))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    return resultado[0] if resultado else None
+    
 
         
         

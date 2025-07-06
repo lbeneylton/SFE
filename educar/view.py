@@ -165,15 +165,17 @@ class TelaCadastro(tk.Frame):
         self.janela_curso = None
         self.janela_turma = None
         self.janela_professor = None
+        self.criar_botoes_na_tela()
     
 
 #BOTOES QUE INICIAM AS JANELAS TOPLEVEL
+
+    def criar_botoes_na_tela(self):
         criar_botao_tela(self, "Cadastrar Aluno", self.abrir_janela_aluno)
         criar_botao_tela(self, "Cadastrar Curso", self.abrir_janela_curso)
         criar_botao_tela(self, "Cadastrar Turma", self.abrir_janela_turma)
         criar_botao_tela(self, "Cadastrar Aula", self.abrir_janela_aula)
         criar_botao_tela(self, "Cadastrar Professor", self.abrir_janela_professor)
-
 
 #FUNÇÕES APORA ABRIR JANELAS
     def abrir_janela_aluno(self):
@@ -385,11 +387,11 @@ class Telapresencas(tk.Frame):
         self.janela_consulta = None
 
         criar_botao_tela(self, "Gerar Grade de Presença", self.abrir_janela_grade)
-        criar_botao_tela(self, "Consultar Presença", self.abrir_janela_consulta)
+        # criar_botao_tela(self, "Consultar Presença", self.abrir_janela_consulta)
 
     # Funções para abrir as janelas de presença e consulta
     def abrir_janela_grade(self):
-        self.fechar_janela_consulta()
+        #self.fechar_janela_consulta()
 
         if self.janela_grade is None or not self.janela_grade.winfo_exists():
             self.janela_grade = tk.Toplevel(self)
@@ -401,20 +403,7 @@ class Telapresencas(tk.Frame):
         else:
             self.janela_grade.lift()       
 
-    def abrir_janela_consulta(self):
-        self.fechar_janela_grade()
-        if self.janela_consulta is None or not self.janela_consulta.winfo_exists():
-            self.janela_consulta = tk.Toplevel(self)
-            self.janela_consulta.title("Consultar Presença")
-            self.janela_consulta.geometry("700x200")
-            self.janela_consulta.resizable(False, False)
-            self.janela_consulta.protocol("WM_DELETE_WINDOW", self.fechar_janela_consulta)
-            #self.criar_formulario(self.janela_consulta, "Consultar Presença", "Consultar Presença", gerar_grade)
-        else:
-            self.janela_consulta.lift()
 
-    # Funções para fechar as janelas
-    def fechar_janela_consulta(self):
         if self.janela_consulta:
             self.janela_consulta.destroy()
             self.janela_consulta = None
@@ -428,50 +417,53 @@ class Telapresencas(tk.Frame):
     # Função para criar o formulário de presença
     def criar_formulario_grade(self, janela, titulo):
         frame = criar_frame(janela, titulo)
+        
         self.frame_grade = criar_frame(janela, "")
 
         # Campo de Data
         criar_label(frame, "Data:", 0, 0)
-        data_entry = criar_date_entry(frame, 0, 1)
+        data_entry = criar_date_entry(frame, 0, 1, 15)
 
         # Campo de Turno
         criar_label(frame, "Turno:", 1, 0)
-        turno_entry = criar_combobox(frame, retornar_turnos_db(), 1, 1)
+        turno_entry = criar_combobox(frame, retornar_turnos_db(), 1, 1, 15)
 
-        # Campo de Turma (começa vazio)
-        criar_label(frame, "Turma:", 2, 0)
-        turma_entry = criar_combobox(frame, [], 2, 1, largura=30)
+
+        # Campo de Curso (começa vazio)
+        criar_label(frame, "Curso:", 0, 2)
+        curso_entry = criar_combobox(frame, [], 0, 3, largura=30)
+                     
 
         # Função para atualizar as turmas quando data ou turno mudarem
-        def atualizar_turmas(*args):
+        def atualizar_cursos(*args):
             data = data_entry.get()
             turno = turno_entry.get()
             if data and turno:
-                turmas = retornar_turmas_na_data_e_turno(br_to_iso(data), turno)
-                turma_entry['values'] = turmas
-                if turmas:
-                    turma_entry.set(turmas[0])
+                cursos = retornar_cursos_na_data_e_turno(br_to_iso(data), turno)
+                curso_entry['values'] = cursos
+                if cursos:
+                    curso_entry.set(cursos[0])
                 else:
-                    turma_entry.set("")
+                    curso_entry.set("")
 
         # Vincula atualização quando a data muda (usando `bind` do `DateEntry`)
-        data_entry.bind("<<DateEntrySelected>>", atualizar_turmas)
+        data_entry.bind("<<DateEntrySelected>>", atualizar_cursos)
 
         # Vincula atualização quando o turno muda
-        turno_entry.bind("<<ComboboxSelected>>", atualizar_turmas)
+        turno_entry.bind("<<ComboboxSelected>>", atualizar_cursos)
 
         # Guarda os campos no dicionário
         self.campos_formulario_grade = {
             "data": data_entry,
             "turno": turno_entry,
-            "turma": turma_entry
+            "curso": curso_entry
         }
 
         # Função para atribuir o resultado a uma variável
         def gerar_grade_e_salvar():
             self.dados = caixa_de_mensagem(retornar_dados_grade(self.campos_formulario_grade))
-            print(self.dados) 
             return self.dados
+
 
         def gerar_grade_interface():
             dados, alunos = gerar_grade_e_salvar()
@@ -500,10 +492,10 @@ class Telapresencas(tk.Frame):
             ttk.Label(self.frame_grade, text="Aluno", font=("Arial", 10, "bold")).grid(row=1, column=0, sticky='w', padx=10)
             ttk.Label(self.frame_grade, text="Presença", font=("Arial", 10, "bold")).grid(row=1, column=1, sticky='w', padx=10)
 
-                    
-
-        # Botão para gerar a grade da turma
-        criar_botao_submit(frame, "Gerar grade da Turma", 3, 0, gerar_grade_interface)         
+            
+        # Botão para gerar a grade da turma         
+        criar_botao_submit(frame, "Gerar grade da Turma", 1, 3, gerar_grade_interface)
+            
         
 
 

@@ -151,8 +151,11 @@ def cadastrar_aula(campos):
 def retornar_dados_grade(campos):
 
     data = campos["data"].get()
-    turma = campos["turma"].get().upper()
+    curso = campos["curso"].get().upper()
     turno = campos["turno"].get().upper()
+    
+    
+    turma = buscar_nome_turma(buscar_id_curso(curso), turno)
     
     # Normaliza os dados
     # Converter data para o formato ISO 
